@@ -1,0 +1,1 @@
+storage.provider != "CompanyA" & (storage.tenant != "CompanyA" | storage.encryption = true) & storage.log_access = true & storage.deleteAfter(1735693210) & storage.backupHistory("1M") & (storage.location = "DE" | (storage.location = "EU" & storage.encryption = true)) & storage.replication >= 2

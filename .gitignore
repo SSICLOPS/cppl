@@ -1,0 +1,17 @@
+*.o
+*.pyc
+
+cppl_generator
+equation_scanner.lex.cc
+equation_parser.tab.cc
+equation_parser.tab.hh
+position.hh
+location.hh
+stack.hh
+eval/figures
+eval/results/*
+
+.cproject
+.project
+.settings
+

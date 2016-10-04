@@ -1,0 +1,13 @@
+{ "variables": [
+        {
+            "name": "earliestDeleteTime",
+            "type": "int32",
+            "value": 1735693100
+        },
+        {
+            "name": "latestDeleteTime",
+            "type": "int32",
+            "value": 1735693300
+        }
+    ]
+}

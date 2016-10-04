@@ -1,0 +1,10 @@
+{ "variables": {
+    "storage.provider": "CompanyB",
+    "storage.log_access": true,
+    "storage.canDelete": true,
+    "storage.canBackupHistory": true,
+    "storage.location": "DE",
+    "storage.encryption": true,
+    "storage.replication": 5
+  }
+}
