@@ -1,5 +1,7 @@
 #include "binary.hh"
 
+#include <stdexcept>
+
 using namespace std;
 
 //adds the bits to the end of the bits set
@@ -98,6 +100,28 @@ void Binary::print()  {
     for(uint32_t position = 0; position < nextFreeBit; position++)    
         cout << at(position, 1);
     cout << endl;
+}
+
+void Binary::write(string filename)  {
+    ofstream file(filename);
+    if(!file.is_open())
+        throw runtime_error("Can't open file "+ filename);
+    // write output to filename
+    for(uint32_t position = 0; position < nextFreeBit; position += 8)
+        file << (uint8_t)( at(position, 8) >> (sizeof(uint64_t) - 8) );
+    file.close();
+}
+
+void Binary::read_from_file(string filename)  {
+    ifstream file(filename, ios::binary);
+    if(!file.is_open())
+        throw runtime_error("Can't open file "+ filename);
+    //read the file into string
+    uint8_t value;
+    while(file.read((char *)(&value), sizeof(value))) {
+        push_back(value, sizeof(value)*8);
+    }
+    file.close();
 }
 
 uint32_t Binary::size()  {

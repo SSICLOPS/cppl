@@ -2,6 +2,8 @@
 *.pyc
 
 cppl_generator
+cppl_compress
+cppl_evaluate
 equation_scanner.lex.cc
 equation_parser.tab.cc
 equation_parser.tab.hh

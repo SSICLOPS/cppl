@@ -1,9 +1,13 @@
 #pragma once
 
+#include <string>
+#include <fstream>
 #include <iostream>
 #include <assert.h>
 #include <cstdint>
 #include <cmath>
+
+using namespace std;
 
 //allows to store and receive bits from the memory adress
 //PolicyPart allows to use for each part of the policy a seperate offsets
@@ -34,6 +38,9 @@ class Binary {
         uint32_t size();
 
         void print();
+
+        void write(string filename);
+        void read_from_file(string filename);
 
         uint8_t *getPointer();
 

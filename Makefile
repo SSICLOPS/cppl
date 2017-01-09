@@ -1,9 +1,17 @@
 CPPFLAGS=-std=c++11 -O3 # -g
 
+all: cppl_generator cppl_evaluate cppl_compress
+
 cppl_generator:	equation_parser.yy equation_scanner.ll cppl_generator.cc ast policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o binary.o debug.o performance.o function_handler.o jsoncpp.o options.hh
 	bison -d equation_parser.yy
 	flex -o equation_scanner.lex.cc equation_scanner.ll
 	g++ $(CPPFLAGS) -o $@ cppl_generator.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
+
+cppl_evaluate: cppl_generator cppl_evaluate.cc
+	g++ $(CPPFLAGS) -o $@ cppl_evaluate.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
+
+cppl_compress: cppl_generator cppl_compress.cc
+	g++ $(CPPFLAGS) -o $@ cppl_compress.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
 
 ast: ast.hh ast_print_visitor.hh ast_print_visitor.cc ast_preprocessor_visitor.hh ast_preprocessor_visitor.cc ast_policy_compressor_visitor.hh ast_policy_compressor_visitor.cc debug.o
 	g++ -c $(CPPFLAGS) ast_print_visitor.cc
@@ -41,4 +49,4 @@ debug.o: debug.hh debug.cc
 	g++ -c $(CPPFLAGS) debug.cc
 
 clean:
-	rm cppl_generator equation_scanner.lex.cc equation_parser.tab.cc equation_parser.tab.hh position.hh location.hh stack.hh *.o
+	rm cppl_generator cppl_evaluate cppl_compress equation_scanner.lex.cc equation_parser.tab.cc equation_parser.tab.hh position.hh location.hh stack.hh *.o
