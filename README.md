@@ -37,6 +37,11 @@ In real use cases, compression and evaluation take place on different machines. 
 ./cppl_evaluate --ccppl-file examples/example_paper/policy_compressed.ccppl --policy-definition-file examples/example_paper/policy_definition.json --variables-file examples/example_paper/policy_nodeparams_1.json --runtime-variables-file examples/example_paper/policy_noderuntimeparams_1.json
 ```
 
+Furthermore, the server needs to know which parts of the policy it has to apply, i.e., which of his attributes fulfill the formula. To this end, the option ```--print-reason FILE``` of ```cppl_evaluate``` outputs these attributes as a JSON file.
+```bash
+./cppl_evaluate --ccppl-file examples/example_paper/policy_compressed.ccppl --policy-definition-file examples/example_paper/policy_definition.json --variables-file examples/example_paper/policy_nodeparams_1.json --runtime-variables-file examples/example_paper/policy_noderuntimeparams_1.json --print-reason examples/example_paper/evaluation_result.json
+```
+
 ## Debugging
 
 The compressed policy is a binary file. To compare it with the readable debugging output it is helpful to print it as a bitstream

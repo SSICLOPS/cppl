@@ -290,8 +290,11 @@ void RelationSet::parse(uint64_t relationSetOffset, uint64_t numberOfRelations) 
                 #endif
 
                 //we only have one child, if it's a IS_TRUE or IS_FALSE relation
-                if(relation.type == RelationSetType::IS_TRUE || relation.type == RelationSetType::IS_FALSE)
+                if(relation.type == RelationSetType::IS_TRUE || relation.type == RelationSetType::IS_FALSE){
                     numberOfElements = 1;
+					//the second variable will not be used
+					relation.variableIds[1] = -2;
+				}
                 //now get the LHS and RHS for this relation
                 for(uint16_t elementId = 0; elementId < numberOfElements; elementId++)  { 
                     uint64_t firstBit = policyBinary.next(1);

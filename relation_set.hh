@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <array>
 
 #include "ast.hh"
 #include "binary.hh"
@@ -15,6 +16,7 @@
 
 #include "debug.hh"
 #include "options.hh"
+
 
 class VariableSet;
 
@@ -145,6 +147,17 @@ class RelationSet {
         bool getRelationResult(uint64_t relationId)  {
             return relations.at(relationId).result;
         }
+
+		vector<int64_t> getRelationVariableIds(uint64_t relationId){
+			vector<int64_t> arr;
+			arr.push_back(relations.at(relationId).variableIds[0]);
+			arr.push_back(relations.at(relationId).variableIds[1]);
+			return arr;
+		}	
+
+		RelationSetType getRelationType(uint64_t relationId){
+			return relations.at(relationId).type;
+		}
 
         //print the calculated relation set size
         void printSize();

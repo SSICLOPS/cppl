@@ -11,6 +11,8 @@
 
 #define EVALUATION_OUTPUT 0
 
+#define PRINT_REASON_TO_CONSOLE
+
 std::string uintToString(uint64_t value, uint8_t numberOfBits);
 std::string intToString(int64_t value, uint8_t numberOfBits);
 std::string doubleToString(double value);

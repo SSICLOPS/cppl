@@ -8,15 +8,15 @@ ostream& operator<<(ostream &out, VariableSet &variableSet) {
 }
 
 void VariableSet::addVariableForDebug(Variable &variable, bool isFunctionParam)  {
-    //DEBUG output
-    #if DEBUG_POLICY_GENERATION
-        if(isFunctionParam == false) //function params have no leading type (known by policy definition)
-            asString = asString + "\n" + string(MAGENTA) + uintToString(variableTypeToInt[variable.type], bitsForVariableSetType) + RESET;
+	//DEBUG output
+	#if DEBUG_POLICY_GENERATION
+		if(isFunctionParam == false) //function params have no leading type (known by policy definition)
+			asString = asString + "\n" + string(MAGENTA) + uintToString(variableTypeToInt[variable.type], bitsForVariableSetType) + RESET;
 
-        if(variable.type == VariableSetType::ID)
-            asString = asString + string(YELLOW) + uintToString(variable.value.asInt32, policyDefinition.bitsForVariablePosition) + RESET;
-        else if(variable.type == VariableSetType::BOOLEAN)
-            asString = asString + string(BLUE) + uintToString(variable.value.asBoolean, 1) + RESET;
+		if(variable.type == VariableSetType::ID)
+			asString = asString + string(YELLOW) + uintToString(variable.value.asInt32, policyDefinition.bitsForVariablePosition) + RESET;
+		else if(variable.type == VariableSetType::BOOLEAN)
+			asString = asString + string(BLUE) + uintToString(variable.value.asBoolean, 1) + RESET;
         else if(variable.type == VariableSetType::STRING)  {
             //add the string as bit representation to the debug output
             string bitString;
@@ -115,6 +115,7 @@ void VariableSet::getVariableValueFromBinary(Variable &var)  {
 
         var.type = policyDefinition.getIdType(id);
         var.value = policyDefinition.getIdValue(id);
+		var.idInPolicyDef = id;
     }
     else if(var.type == VariableSetType::ENUM_VALUE)  {
         //an enum value comes always after the related enum id, s.t. we can get the type from it
@@ -156,6 +157,7 @@ void VariableSet::getVariableValueFromBinary(Variable &var)  {
         string functionName = policyDefinition.getIdName(functionPosition);
         //use the function handler to get the result of the function (defined by policy provider)
         var.value.asBoolean = functionHandler.processFunction(functionName, *(var.funcParams));
+		var.idInPolicyDef = functionPosition;
     }
     //signed integers
     else if(var.type == VariableSetType::INT64)

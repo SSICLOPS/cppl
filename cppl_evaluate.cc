@@ -20,6 +20,8 @@
 
 #include "performance.h"
 
+#include "simple_reason_printer.hh"
+
 namespace  { 
     const size_t SUCCESS = 0; 
     const size_t ERROR_IN_COMMAND_LINE = 1; 
@@ -47,6 +49,10 @@ int main (int argc, char *argv[])  {
         string variablesFile;
         string policyDefinitionFile;
         string runtimeVariablesFile;
+
+		//reason related
+		bool printReasonEnabled = false;
+		string reasonFile;
         
         //Define and parse the program options
         namespace po = boost::program_options; 
@@ -58,7 +64,8 @@ int main (int argc, char *argv[])  {
             ("variables-file", po::value<string>(), "JSON file with values for the variables of the policy definition")
             ("runtime-variables-file", po::value<string>(), "JSON file with values for the runtime variables used by the custom functions")
             ("trace-parsing,p", "Print the parser trace (for debugging)") 
-            ("trace-scanning,s", "Print the scanning trace (for debugging)");
+            ("trace-scanning,s", "Print the scanning trace (for debugging)")
+			("print-reason", po::value<string>(), "Output reasons, why the evaluation is true, to a JSON file");
 
         //all positional options should be translated into "input-file" options
         po::positional_options_description p;
@@ -116,6 +123,11 @@ int main (int argc, char *argv[])  {
                 std::cerr << "No ccppl file!" << std::endl;
                 return ERROR_IN_COMMAND_LINE;
             }
+
+			if (vm.count("print-reason")) {
+				reasonFile = vm["print-reason"].as<string>();
+				printReasonEnabled = true;
+			}
 
             po::notify(vm); // throws on error
         } 
@@ -228,6 +240,19 @@ int main (int argc, char *argv[])  {
         #endif
 
         cout << "Policy result: " << (policyResult ? "true" : "false") << endl;
+
+		if (printReasonEnabled){
+			SimpleReasonPrinter simpleReasonPrinter;
+			simpleReasonPrinter.init(&evalPolicyDefinition, &evalRelationSet, &evalVariableSet);
+			evalPolicyStack.printReason(simpleReasonPrinter);
+#ifdef PRINT_REASON_TO_CONSOLE
+			cout<<"------------------------------"<<endl;
+			cout << simpleReasonPrinter.printReasonToJSON()<<endl;
+			cout <<"------------------------------"<<endl;
+#endif //PRINT_REASON_TO_CONSOLE
+			simpleReasonPrinter.printReasonToJSON(reasonFile);
+		}
+
     } 
     catch(char const *msg)  {
         std::cerr << "Policy Error: " << msg << std::endl;

@@ -9,6 +9,8 @@
 #include "ast.hh"
 #include "colors.hh"
 #include "relation_set.hh"
+#include "policy_stack_processor.hh"
+#include "reason_printer.hh"
 
 #include "debug.hh"
 
@@ -92,11 +94,16 @@ class PolicyStack  {
         //print the size of the policy stack
         void printSize();
 
+		//print the reason of processing result
+		void printReason(ReasonPrinter & reasonPrinter){policyStackProcessor.printReason(reasonPrinter);}
+
     private:
         Binary &policyBinary;
         RelationSet &relationSet;
         uint64_t relationSetOffset;
         uint64_t numberOfRelations;
+		//handle the processing work
+		PolicyStackProcessor policyStackProcessor;
 
         static const uint8_t bitsForStackOperation = 2;
 

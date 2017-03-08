@@ -55,8 +55,21 @@ struct Variable  {
     VariableSetType type;
     VariableSetValue value;
     bool isEnum;
+	//only used when the variable type was originally ID or FUNCTION
+	//variable type will be changed by function getVariableValueFromBinary()
+	uint32_t idInPolicyDef;
     vector<Variable> *funcParams; //only used when the variable set element is a function
     uint8_t bitsForEnumValuePosition; //only used if a enum value
+
+	Variable():idInPolicyDef((uint32_t) -1), funcParams(NULL){}
+	//Variable(const Variable & other){operator=(other);}
+	//~Variable(){if (type == VariableSetType::STRING) delete value.asString;else if (isFunction()) delete funcParams;}
+
+	//If the originally type of this variable is ID or FUNCITON
+	//can be seen as a Reference of variable in policy definition files
+	bool isReference() const{return idInPolicyDef != (uint32_t) -1;}
+
+	bool isFunction() const {return funcParams != NULL;}
 
     //returns true if the variable type represents an integer; false otherwise
     bool isInteger()  {
@@ -74,12 +87,26 @@ struct Variable  {
         return false;
     }
 
+	//Variable & operator=(const Variable & other){
+		//type = other.type;
+		//idInPolicyDef = other.idInPolicyDef;
+		//bitsForEnumValuePosition = other.bitsForEnumValuePosition;
+		//if (type == VariableSetType::STRING){
+			//value.asString = new string(*(other.value.asString));
+		//}
+		//else if (other.isFunction()){
+			//funcParams = new vector<Variable>(*(other.funcParams));
+		//}
+
+		//return *this;
+	//}
+
     //used to compare if two Variable structures are equal in all properties
     friend bool operator==(const Variable &lhs, const Variable &rhs)
     {
         if(lhs.type != rhs.type || lhs.isEnum != rhs.isEnum) //check the types and isEnum first
             return false;
-        //since the types matches, we now need to check the values
+        //since the types m0atches, we now need to check the values
         //boolean
         if(lhs.type == VariableSetType::BOOLEAN)
             return lhs.value.asBoolean == rhs.value.asBoolean;
@@ -230,6 +257,10 @@ class VariableSet {
 
         //consts for the specific variable id feature
         static const uint8_t bitsForSpecificVariableId = SPECIFIC_VARIABLE_ID_LEN_IN_BITS; //additionally +1 bit is used, to indicate that a specific variable
+
+		Variable getVariableById(uint64_t id){
+			return variables.at(id);
+		}
 
     private:
         PolicyDefinition &policyDefinition;

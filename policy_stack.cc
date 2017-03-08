@@ -109,7 +109,7 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
         cout << "Processing the evaluation stack..." << endl;
     #endif
     uint64_t nextRelationCounter = 0;
-    std::stack<bool> resultStack;
+    //std::stack<bool> resultStack;
     StackOperation stackOp;
 
     while(!policyStack.empty())  {
@@ -117,7 +117,7 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
 
         if(stackOp.type == PolicyStackOperationType::AND)  {
             //get the two lastest booleans added to the result stack
-            bool latestResult = resultStack.top();
+            /*bool latestResult = resultStack.top();
             resultStack.pop();
             bool secondLatestResult = resultStack.top();
             bool result = latestResult & secondLatestResult;
@@ -125,11 +125,12 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
                 cout << latestResult << " AND " << secondLatestResult << " so storing " << result << " on the stack" << endl;
             #endif
             resultStack.pop();
-            resultStack.push(result);
+            resultStack.push(result);*/
+			policyStackProcessor.addStackOperation(PolicyStackProcessorNodeType::AND);
         }
         else if(stackOp.type == PolicyStackOperationType::OR)  {
             //get the two lastest booleans added to the result stack
-            bool latestResult = resultStack.top();
+            /*bool latestResult = resultStack.top();
             resultStack.pop();
             bool secondLatestResult = resultStack.top();
             bool result = latestResult | secondLatestResult;
@@ -137,7 +138,8 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
                 cout << latestResult << " OR " << secondLatestResult << " so storing " << result << " on the stack" << endl;
             #endif
             resultStack.pop();
-            resultStack.push(result);
+            resultStack.push(result);*/
+			policyStackProcessor.addStackOperation(PolicyStackProcessorNodeType::OR);
         }
         else if(stackOp.type == PolicyStackOperationType::NEXT_RELATION)  {
             stackOp.relationId = nextRelationCounter;
@@ -146,14 +148,16 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
             #if DEBUG_POLICY_EVALUATION
                 cout << "storing relation (" << stackOp.relationId << ") -> " << result << " on the stack" << endl;
             #endif
-            resultStack.push(result);
+            //resultStack.push(result);
+			policyStackProcessor.addStackOperation(PolicyStackProcessorNodeType::RELATION, result, stackOp.relationId);
         }
         else if(stackOp.type == PolicyStackOperationType::SPECIFIC_RELATION)  {
             bool result = relationSet.getRelationResult(stackOp.relationId);
             #if DEBUG_POLICY_EVALUATION
                 cout << "storing relation (" << stackOp.relationId << ") -> " << result << " on the stack" << endl;
             #endif
-            resultStack.push(result);
+           // resultStack.push(result);
+		   policyStackProcessor.addStackOperation(PolicyStackProcessorNodeType::RELATION, result, stackOp.relationId);
         }
         else
             throw "StackOperationType not implemented!";
@@ -161,8 +165,9 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
         policyStack.pop();
     }
 
-    assert(resultStack.size() == 1);
-    return resultStack.top();
+    //assert(resultStack.size() == 1);
+    //return resultStack.top();
+	return policyStackProcessor.getResult();
 }
 
 void PolicyStack::store()  {

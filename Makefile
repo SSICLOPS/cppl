@@ -1,52 +1,65 @@
-CPPFLAGS=-std=c++11 -O3 # -g
+CC := g++
+CPPFLAGS := -std=c++11 -O3 
+CPPFLAGS += -gdwarf-4 -fvar-tracking-assignments
+COMMON_OBJS := policy_definition.o\
+			   policy_header.o\
+			   policy_stack.o\
+			   relation_set.o\
+			   variable_set.o\
+			   function_handler.o\
+			   binary.o\
+			   jsoncpp.o\
+			   binary.o\
+			   performance.o\
+			   debug.o\
+			   policy_stack_processor.o
 
-all: cppl_generator cppl_evaluate cppl_compress
+COMPRESS_OBJS := ast_print_visitor.o\
+				 ast_preprocessor_visitor.o\
+				 ast_policy_compressor_visitor.o
 
-cppl_generator:	equation_parser.yy equation_scanner.ll cppl_generator.cc ast policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o binary.o debug.o performance.o function_handler.o jsoncpp.o options.hh
+EVAL_OBJS := simple_reason_printer.o
+
+OBJECTS := $(COMMON_OBJS) $(COMPRESS_OBJS) $(EVAL_OBJS)
+
+LIB := -lboost_program_options -ljsoncpp
+
+DOT_CC := equation_parser.tab.cc equation_scanner.lex.cc equation_driver.cc
+
+RM := rm -f
+
+all: cppl_generator cppl_compress cppl_evaluate
+
+cppl_generator: cppl_generator.cc $(DOT_CC) $(OBJECTS)
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LIB)
+
+cppl_evaluate: cppl_evaluate.cc $(COMMON_OBJS) $(EVAL_OBJS)
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LIB)
+
+cppl_compress: cppl_compress.cc $(DOT_CC) $(COMMON_OBJS) $(COMPRESS_OBJS)
+	$(CC) $(CPPFLAGS) -o $@ $^ $(LIB)
+
+equation_parser.tab.cc: equation_parser.yy
 	bison -d equation_parser.yy
+
+equation_scanner.lex.cc: equation_scanner.ll
 	flex -o equation_scanner.lex.cc equation_scanner.ll
-	g++ $(CPPFLAGS) -o $@ cppl_generator.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
 
-cppl_evaluate: cppl_generator cppl_evaluate.cc
-	g++ $(CPPFLAGS) -o $@ cppl_evaluate.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
+jsoncpp.o: jsoncpp.cpp json/json.h
+	$(CC) -c $(CPPFLAGS) $<
 
-cppl_compress: cppl_generator cppl_compress.cc
-	g++ $(CPPFLAGS) -o $@ cppl_compress.cc equation_driver.cc equation_parser.tab.cc equation_scanner.lex.cc ast_print_visitor.o ast_preprocessor_visitor.o policy_definition.o policy_stack.o relation_set.o variable_set.o policy_header.o ast_policy_compressor_visitor.o binary.o performance.o function_handler.o debug.o -lboost_program_options -ljsoncpp
+performance.o: performance.c performance.h
+	$(CC) -c $(CPPFLAGS) $<
 
-ast: ast.hh ast_print_visitor.hh ast_print_visitor.cc ast_preprocessor_visitor.hh ast_preprocessor_visitor.cc ast_policy_compressor_visitor.hh ast_policy_compressor_visitor.cc debug.o
-	g++ -c $(CPPFLAGS) ast_print_visitor.cc
-	g++ -c $(CPPFLAGS) ast_preprocessor_visitor.cc
-	g++ -c $(CPPFLAGS) ast_policy_compressor_visitor.cc
-
-policy_definition.o: policy_definition.hh policy_definition.cc variable_set.o binary.o debug.o
-	g++ -c $(CPPFLAGS) policy_definition.cc
-
-relation_set.o: relation_set.hh relation_set.cc variable_set.o binary.o debug.o options.hh
-	g++ -c $(CPPFLAGS) relation_set.cc
-
-policy_stack.o: policy_stack.hh policy_stack.cc binary.o debug.o
-	g++ -c $(CPPFLAGS) policy_stack.cc
-
-variable_set.o: variable_set.hh variable_set.cc binary.o debug.o
-	g++ -c $(CPPFLAGS) variable_set.cc
-
-policy_header.o: policy_header.hh policy_header.cc binary.o debug.o
-	g++ -c $(CPPFLAGS) policy_header.cc
-
-binary.o: binary.hh binary.cc debug.o
-	g++ -c $(CPPFLAGS) binary.cc
-
-performance.o: performance.h performance.c debug.o
-	g++ -c $(CPPFLAGS) performance.c
-
-function_handler.o: function_handler.hh function_handler.cc debug.o
-	g++ -c $(CPPFLAGS) function_handler.cc
-
-jsoncpp.o: json/json.h jsoncpp.cpp
-	g++ -c $(CPPFLAGS) jsoncpp.cpp
-
-debug.o: debug.hh debug.cc
-	g++ -c $(CPPFLAGS) debug.cc
+.SECONDARY:$(OBJECTS)
+%.o: %.cc %.hh options.hh debug.hh
+	$(CC) -c $(CPPFLAGS) $<
 
 clean:
-	rm cppl_generator cppl_evaluate cppl_compress equation_scanner.lex.cc equation_parser.tab.cc equation_parser.tab.hh position.hh location.hh stack.hh *.o
+	$(RM) cppl_generator cppl_compress cppl_evaluate
+	$(RM) equation_parser.tab.hh equation_parser.tab.cc
+	$(RM) equation_scanner.lex.cc
+	$(RM) position.hh location.hh stack.hh
+	$(RM) *.o
+	#delete output from reason printer
+	$(RM) *.json
