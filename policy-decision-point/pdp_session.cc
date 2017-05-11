@@ -2,6 +2,7 @@
 #include "pdp_session.hh"
 #include "node_parameter_manager.hh"
 #include "policy_stack.hh"
+#include "libcppl.hh"
 
 void PDPSession::start(){
 	async_read(PackageHeaderFieldLen::COMMON_HEADER_LEN);
@@ -92,8 +93,9 @@ void __eval_policy(std::vector<char> buf){
 			+ *reinterpret_cast<data_len_t *>(&buf[0] + PackageHeaderFieldLen::TYPE))<<std::endl;
 	std::cout<<"policy len:"<< *reinterpret_cast<policy_len_t *>(&buf[0] + PackageHeaderFieldLen::COMMON_HEADER_LEN)<<std::endl;
 #endif
-	const NodeParameters * pnp = NULL;
-	PolicyStack policyStack(&pnp);
+	//const NodeParameters * pnp = NULL;
+	//PolicyStack policyStack(&pnp);
+	PolicyStack policyStack;
 	policyStack.load(&buf[0] + PackageHeaderFieldLen::POLICY_ENABLED_DATA_HEADER_LEN + *reinterpret_cast<data_len_t *>(&buf[0] + PackageHeaderFieldLen::TYPE),
 			(*reinterpret_cast<policy_len_t *>(&buf[0] + PackageHeaderFieldLen::COMMON_HEADER_LEN))<<3);//<<3 := *8
 
@@ -103,8 +105,9 @@ void __eval_policy(std::vector<char> buf){
 	for (auto it = serverList.begin(); it != serverList.end(); ++it){
 		NodeParameterManagerNode * npmn = nodeParameterManager->getNodeParameters(*it, policyStack.getVersion());
 		boost::shared_lock<boost::shared_mutex> lock(npmn->_mutex);
-		pnp = npmn->_nodeParameters;
-		policyStack.doEval();
+		//pnp = npmn->_nodeParameters;
+		cppl_evaluate(&policyStack, npmn->_nodeParameters);
+		//policyStack.doEval();
 		std::cout<< *it <<": "<<((policyStack.getResult())?"true":"false")<<std::endl;
 	}
 }

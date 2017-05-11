@@ -1,14 +1,19 @@
 #include "node_parameter.hh"
 #include "policy_definition_manager.hh"
 
-void NodeParameters::load(std::string param_str, pol_def_version_t v){
+void NodeParameters::load(const std::string & param_str, pol_def_version_t v){
 	clear();
 
 	const PolicyDefinition * policyDefinition = PolicyDefinitionManager::getInstance()->getPolicyDefinition(v);
 	if (policyDefinition == NULL)
 		throw "no such policy definition";
+
+	load(param_str, policyDefinition);
+}
+
+void NodeParameters::load(const std::string & param_str, const PolicyDefinition * policyDefinition){
 	
-	version = v;
+	version = policyDefinition->getVersionNumber();
 
 	Json::Value real_root;
 	Json::Reader reader;

@@ -1,4 +1,5 @@
 #include <cmath>
+#include<dlfcn.h>
 
 #include "policy_definition.hh"
 
@@ -16,7 +17,19 @@ void PolicyDefinition::clear(){
 		dlclose(funcHandler);
 }
 
-void PolicyDefinition::load(std::string def_str, void * func_handler){
+void PolicyDefinition::load(const std::string & def_str, const std::string & libname){
+	void * h = NULL;
+	if (libname != ""){
+		h =  dlopen(libname.c_str(), RTLD_LAZY); 
+		if (!h){
+			std::string str = dlerror();
+			throw "Can't load lib" + libname;
+		}
+	}
+	load(def_str, h);
+}
+
+void PolicyDefinition::load(const std::string & def_str, void * func_handler){
 	clear();
 
 	funcHandler = func_handler;

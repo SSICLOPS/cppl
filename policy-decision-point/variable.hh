@@ -1,24 +1,26 @@
 #pragma once
 
+#include <iostream>
+
 #include "options.hh"
 
 class Variable{
 	public:
 		enum Types{
-			INT8,
-			INT16,
-			INT32,
-			INT64,
-			UINT8,
-			UINT16,
-			UINT32,
-			UINT64,
-			DOUBLE,
-			BOOLEAN,
-			STRING,
-			ID,
-			ENUM_VALUE,
-			FUNCTION
+			INT8 = 8,
+			INT16 = 7,
+			INT32 = 6,
+			INT64 = 5,
+			UINT8 = 11,
+			UINT16 = 10,
+			UINT32 = 9,
+			UINT64 = 13,
+			DOUBLE = 12,
+			BOOLEAN = 0,
+			STRING = 2,
+			ID = 1,
+			ENUM_VALUE = 3,
+			FUNCTION = 4
 		};
 
 		Variable(Types t):type(t){}
@@ -45,6 +47,7 @@ class Variable{
 		bool operator>=(const Variable & v) const {/*if (!comparableTo(v)) return false; else*/ return isGeq(v);}
 
 		bool isTrue() const {return _isTrue();}
+		bool sameAs(const Variable & v) const{return _sameAs(v);}
 #endif //__USE_VIRTAUL_FUNC__
 
 	protected:
@@ -61,5 +64,6 @@ class Variable{
 		virtual bool isGeq(const Variable & v) const = 0;
 
 		virtual bool _isTrue() const {return false;}
+		virtual bool _sameAs(const Variable & v) const = 0;
 #endif //__USE_VIRTUAL_FUNC__
 };

@@ -40,6 +40,10 @@ class ID:public Variable{
 
 		bool _isTrue() const {return getValue()->isTrue();}
 
+		bool _sameAs(const Variable & v) const{
+			return get_type() == v.get_type() && id == reinterpret_cast<const ID &>(v).getID();
+		}
+
 		id_type id;
 		const NodeParameters ** current_node_parameters;
 };

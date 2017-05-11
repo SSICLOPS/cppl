@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <vector>
+#include <cstring>
 
 
 typedef uint16_t package_type_t;
@@ -19,3 +21,36 @@ enum PackageType{
 	NODE_PARAM = 1,
 	POLICY_ENABLED_DATA = 2
 };
+
+//std::vector<char> makePolicyEnabledDataPackage(const void * data, size_t dataLen, const void * ccppl, size_t ccpplLen){
+	//size_t packageLen = PackageHeaderFieldLen::POLICY_ENABLED_DATA_HEADER_LEN + dataLen + ccpplLen;
+	//std::vector<char> package(packageLen);
+
+	//*reinterpret_cast<package_type_t *>(&package[0]) = PackageType::POLICY_ENABLED_DATA;
+	//*reinterpret_cast<data_len_t *>(&package[0] + PackageHeaderFieldLen::TYPE) = dataLen;
+	//*reinterpret_cast<policy_len_t *>(&package[0] + PackageHeaderFieldLen::COMMON_HEADER_LEN) = ccpplLen;
+
+	//char * pData = &package[0] + PackageHeaderFieldLen::POLICY_ENABLED_DATA_HEADER_LEN;
+	//char * pCcppl = (&package[0] + PackageHeaderFieldLen::POLICY_ENABLED_DATA_HEADER_LEN + dataLen);
+
+	//memcpy(pData, data, dataLen);
+	//memcpy(pCcppl, ccppl, ccpplLen);
+
+	//return package;
+//}
+
+//std::vector<char> makeNodeParamsPackage(const std::string & nodeParams, const std::string & runtimePrams){
+	//size_t packageLen = PackageHeaderFieldLen::TYPE + nodeParams.size() + runtimePrams.size() + 3;
+//}
+
+//inline package_type_t * getTypeField(void * buf){
+	//return reinterpret_cast<package_type_t *>(buf);
+//}
+
+//inline data_len_t * getDataLengthField(void * buf){
+	//return reinterpret_cast<data_len_t *>((char *)buf + PackageHeaderFieldLen::TYPE);
+//}
+
+//inline policy_len_t * getPolicyLengthField(void * buf){
+	//return reinterpret_cast<policy_len_t *>((char *)buf + PackageHeaderFieldLen::COMMON_HEADER_LEN);
+//}

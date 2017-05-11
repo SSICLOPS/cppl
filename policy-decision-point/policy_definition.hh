@@ -12,20 +12,22 @@
 #include "variable.hh"
 #include "node_parameter.hh"
 
-enum PDEntryTypes{
-	INT8,
-	INT16,
-	INT32,
-	INT64,
-	UINT8,
-	UINT16,
-	UINT32,
-	UINT64,
-	DOUBLE,
-	BOOLEAN,
-	STRING,
-	ENUM_VALUE,
-	FUNCTION
+class NodeParameters;
+
+enum PDEntryTypes : uint8_t{
+	INT8 = 0,
+	INT16 = 1,
+	INT32 = 2,
+	INT64 = 3,
+	UINT8 = 4,
+	UINT16 = 5,
+	UINT32 = 6,
+	UINT64 = 7,
+	DOUBLE = 8,
+	BOOLEAN = 9,
+	STRING = 10,
+	ENUM_VALUE = 11,
+	FUNCTION = 12
 };
 
 struct PDEntry{
@@ -39,6 +41,7 @@ struct CommonEnumEntry:public PDEntry{
 	PDEntryTypes enum_type;
 	virtual ~CommonEnumEntry(){}
 	virtual id_type getElemNum() const {return 0;}
+	virtual void print(std::ostream & out, id_type offset) const {out<<offset;}
 };
 
 #define no_entry (std::numeric_limits<id_type>::max())
@@ -55,6 +58,11 @@ struct EnumEntry:public CommonEnumEntry{
 	}
 
 	id_type getElemNum() const {return enum_elem.size();}
+	void print(std::ostream & out, id_type offset) const {
+		if (offset < enum_elem.size()){
+			out<<enum_elem[offset];
+		}
+	}
 };
 
 struct FuncEntry:public PDEntry{
@@ -70,7 +78,8 @@ class PolicyDefinition{
 		PolicyDefinition():version(0), bitsForVariableList(0), funcHandler(NULL){}
 		~PolicyDefinition();
 
-	 	void load(std::string def_str, void * func_handler = NULL);
+		void load(const std::string & def_str, const std::string & function_handler_path);
+	 	void load(const std::string & def_str, void * func_handler = NULL);
 		const PDEntry * query(const std::string var_name) const;
 		const PDEntry * queryByID(const id_type i) const;
 		std::string getNameByID(const id_type i) const;

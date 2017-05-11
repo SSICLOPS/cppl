@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <cstring>
+#include <math.h>
 
 using namespace std;
 
@@ -73,7 +74,7 @@ uint64_t Binary::next(uint8_t numberOfBits)  {
     return value;
 }
 
-uint64_t Binary::at(uint64_t offset, uint8_t numberOfBits)  {
+uint64_t Binary::at(uint64_t offset, uint8_t numberOfBits)  const {
     //numberOfBits must be smaller than the max number of bits in the return type
     assert(numberOfBits <= 64 && numberOfBits > 0);
     assert(mem != NULL);
@@ -103,7 +104,7 @@ void Binary::print()  {
     cout << endl;
 }
 
-void Binary::write(string filename)  {
+void Binary::write(string filename) const {
     ofstream file(filename);
     if(!file.is_open())
         throw runtime_error("Can't open file "+ filename);
@@ -113,16 +114,45 @@ void Binary::write(string filename)  {
     file.close();
 }
 
+void Binary::write(FILE * file) const{
+	if (file == NULL)
+		throw runtime_error("empty file handle");
+
+	if (mem)
+		fwrite(mem, 1, ceil(nextFreeBit/8.0), file);
+}
+
 void Binary::read_from_file(string filename)  {
-    ifstream file(filename, ios::binary);
-    if(!file.is_open())
-        throw runtime_error("Can't open file "+ filename);
+    //ifstream file(filename, ios::binary);
+    //if(!file.is_open())
+        //throw runtime_error("Can't open file "+ filename);
     //read the file into string
-    uint8_t value;
-    while(file.read((char *)(&value), sizeof(value))) {
-        push_back(value, sizeof(value)*8);
-    }
-    file.close();
+    //uint8_t value;
+    //while(file.read((char *)(&value), sizeof(value))) {
+        //push_back(value, sizeof(value)*8);
+    //}
+    //file.close();
+	if (mem != NULL)
+		free(mem);
+
+	ifstream file(filename, std::ios_base::binary | std::ios_base::ate);
+	uint64_t fileSize = file.tellg();
+	uint64_t neededBytes = fileSize;
+	if (neededBytes <= initMallocSize)
+		allocatedBytes = initMallocSize;
+	else{
+		allocatedBytes = initMallocSize * exp2(ceil(log2((double)neededBytes/initMallocSize)));
+	}
+
+	mem = (uint8_t*)malloc(allocatedBytes);
+	if (mem == NULL){
+		allocatedBytes = 0;
+		throw "malloc failed";
+	}
+	file.seekg(0);
+	file.read((char*)mem,fileSize);
+	nextFreeBit = fileSize<<3;
+	bitOffset = 0;
 }
 
 uint32_t Binary::size()  {
@@ -155,5 +185,6 @@ void Binary::read_from_mem(const void * data, uint64_t len){
 }
 
 Binary::~Binary(){
-	free(mem);
+	if (mem)
+		free(mem);
 }

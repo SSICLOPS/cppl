@@ -8,14 +8,14 @@
 class Relation{
 	public:
 		enum Types{
-			EQUAL,
-			NEQ,
-			LESS,
-			LEQ,
-			GREATER,
-			GEQ,
-			IS_TRUE,
-			IS_FALSE
+			EQUAL = 0,
+			NEQ = 1,
+			LESS = 2,
+			LEQ = 3,
+			GREATER = 4,
+			GEQ = 5,
+			IS_TRUE = 6,
+			IS_FALSE = 7
 //			END
 		};
 
@@ -28,6 +28,20 @@ class Relation{
 		inline id_type getLeftID() const {return left;}
 		inline id_type getRightID() const {return right;}
 		inline Types getType() const {return type;}
+
+		bool operator==(const Relation & r) const{
+			if (type != r.getType() || left != r.getLeftID())
+				return false;
+
+			if (type != Types::IS_TRUE && type != Types::IS_FALSE)
+				return right == r.getRightID();
+
+			return true;
+		}
+		
+		bool operator!=(const Relation & r) const{
+			return !(*this == r);
+		}
 
 		bool doEval(const Variable * lv, const Variable * rv){return _doEval(lv, rv);}
 	protected:

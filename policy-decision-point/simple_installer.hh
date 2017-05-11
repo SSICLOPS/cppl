@@ -21,6 +21,9 @@ class SimpleInstaller{
 		}
 
 		const Node * getFilePath(pol_def_version_t v){try{return &(installed_list.at(v));}catch (std::out_of_range e){return NULL;}}
+		inline void addPolicyDefinition(pol_def_version_t v, std::string & definition, std::string & funcHandlerPath){
+			installed_list[v] = Node{definition, funcHandlerPath};
+		}
 	private:
 		std::map<pol_def_version_t, Node> installed_list;
 };

@@ -30,12 +30,31 @@ void CcpplDecompressor::decompress(const void * data, uint16_t len, std::stack<S
 
 	//read header
 	uint16_t version = binary.next(16);
+	_version = version;
 	const PolicyDefinition * policyDefinition = PolicyDefinitionManager::getInstance()->getPolicyDefinition(version);
 	if (policyDefinition == NULL)
 		throw "can not find policy definition with version number: " + std::to_string(version);
 
+	doDecompress(binary, policyDefinition, policyStack, relationSet);
+}
+
+void CcpplDecompressor::decompress(Binary & binary,
+		const PolicyDefinition * policyDefinition,
+		std::stack<StackOperation> & policyStack,
+		RelationSet & relationSet)
+{
+	//read header
+	uint16_t version = binary.next(16);
 	_version = version;
 
+	doDecompress(binary, policyDefinition, policyStack, relationSet);
+}
+
+void CcpplDecompressor::doDecompress(Binary & binary,
+		const PolicyDefinition * policyDefinition,
+		std::stack<StackOperation> & policyStack,
+		RelationSet & relationSet)
+{
 	//parse policy stack
 	StackOperation stackOp;
 	std::vector<StackOperation> workOpVector;
@@ -150,7 +169,7 @@ void CcpplDecompressor::decompress(const void * data, uint16_t len, std::stack<S
 			const FuncEntry * funcEntry = static_cast<const FuncEntry *>(policyDefinition->queryByID(id));
 			//-----------------------------------------------------------------------------------------------------
 			//Function * func = new Function((func_handler_type)funcEntry->handler, nodeParameters);
-			Function * func = new Function(funcEntry->handler, nodeParameters);
+			Function * func = new Function(id, funcEntry->handler, nodeParameters);
 			//-----------------------------------------------------------------------------------------------------
 			for (auto it = funcEntry->para_list.begin(); it != funcEntry->para_list.end(); ++it){
 				Variable::Types type = PolDefEntryType2VarType(*it);

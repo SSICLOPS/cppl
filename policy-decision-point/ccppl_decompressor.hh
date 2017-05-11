@@ -15,8 +15,16 @@ class CcpplDecompressor{
 	public:
 	   CcpplDecompressor(const NodeParameters ** np):nodeParameters(np){}
 	   void decompress(const void * data, uint16_t len, std::stack<StackOperation> & policyStack, RelationSet & relationSet);
+	   void decompress(Binary & binary,
+			   const PolicyDefinition * policyDefinition,
+			   std::stack<StackOperation> & policyStack,
+			   RelationSet & relationSet);
 	   inline pol_def_version_t getVersion(){return _version;}
 	private:
+	   void doDecompress(Binary & binary,
+			   const PolicyDefinition * policyDefinition,
+			   std::stack<StackOperation> & policyStack,
+			   RelationSet & relationSet);
 	   PolicyStackOperationType getStackOperationType(Binary & binary);
 	   Relation::Types getRelationType(Binary & binary);
 	   id_type getVariableID(Binary & binary, uint64_t & var_num);

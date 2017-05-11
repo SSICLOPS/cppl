@@ -33,6 +33,10 @@ class __StrongTypeVariable:public Variable{
 
 		bool _isTrue() const{return (static_cast<const T *>(this)->isTrue());}
 
+		bool _sameAs(const Variable & v) const{
+			__DO_EVAL__(==);
+		}
+
 	private:	
 		bool operator==(const __StrongTypeVariable<T, U> &) const{return false;}
 		bool operator!=(const __StrongTypeVariable<T, U> &) const{return false;}

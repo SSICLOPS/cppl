@@ -64,7 +64,6 @@ do
 	env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../../policy-decision-point\
 	$CPPL_EVALUATE --ccppl-file policy_compressed.ccppl\
 		--policy-definition policy_definition.json\
-		--function-handler ../../policy-decision-point/func_handler_23.so\
 		--variables-file generated_test_cases/policy_nodeparams_$TEST_CASE_ID.json\
 		--runtime-variables generated_test_cases/policy_noderuntimeparams_$TEST_CASE_ID.json >> $OUT_PUT_FILE
 

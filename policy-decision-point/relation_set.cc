@@ -22,3 +22,13 @@ void RelationSet::doEval(){
 #endif
 	}
 }
+
+id_type RelationSet::getRelationID(const Relation & r) const{
+	id_type id = 0;
+	for (;id != relation_list.size() && r != *relation_list[id].relation; ++id);
+
+	if (id == relation_list.size())
+		return std::numeric_limits<id_type>::max();
+	else
+		return id;
+}

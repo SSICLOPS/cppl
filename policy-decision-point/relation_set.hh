@@ -1,5 +1,7 @@
 #pragma once
 
+#include<limits>
+
 #include "relation.hh"
 #include "variable_set.hh"
 
@@ -14,6 +16,15 @@ class RelationSet{
 		id_type addVariable(Variable * v){return variable_set.addVariable(v);}
 
 		bool getEvalResult(id_type relation_id){return relation_list[relation_id].evalResult;}
+
+		id_type getRelationID(const Relation & r) const;
+		inline id_type getVariableID(const Variable & v) const {return variable_set.getVariableID(v);}
+
+		inline id_type getRelationNum() const {return relation_list.size();}
+		inline id_type getVariableNum() const {return variable_set.getVariableNum();}
+
+		inline const Relation * getRelation(id_type relation_id) const {return relation_list[relation_id].relation;}
+		inline const Variable * getVariable(id_type variable_id) const {return variable_set.getVariable(variable_id);}
 
 		void doEval();
 	private:

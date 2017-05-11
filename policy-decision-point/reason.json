@@ -1,0 +1,8 @@
+{
+"reasons":[
+"storage.backupHistory( \"1M\" )",
+"storage.location=DE",
+"storage.deleteAfter( 1735693210 )",
+"storage.provider!=\"CompanyA\"",
+"storage.log_access=true"
+] }

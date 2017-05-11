@@ -87,6 +87,10 @@ class NumericType: public Variable{//public __NumericType<NumericType<T, U>, U >
 		}
 
 		bool _isTrue() const{return (bool)value;}
+		
+		bool _sameAs(const Variable & v) const{
+			return this->get_type() == v.get_type() && *this == reinterpret_cast<const NumericType<T, U> &>(v);
+		}
 
 		T value;
 };
