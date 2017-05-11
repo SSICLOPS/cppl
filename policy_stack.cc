@@ -2,7 +2,7 @@
 
 void PolicyStack::push_back(StackOperation stackOp)  {
     //push the current operation to the stack
-    policyStack.push(stackOp);
+    m_policyStack.push(stackOp);
 
     //DEBUG output for PolicyStack and iteration order
     #if DEBUG_POLICY_GENERATION
@@ -89,7 +89,7 @@ void PolicyStack::parseStack()  {
         else
             throw "Stack operation not implemented!";
 
-        policyStack.push(stackOp);
+        m_policyStack.push(stackOp);
     }
 
     relationSetOffset = policyBinary.getPosition(); //since we are at the end of the stack
@@ -111,6 +111,7 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
     uint64_t nextRelationCounter = 0;
     //std::stack<bool> resultStack;
     StackOperation stackOp;
+	stack<StackOperation> policyStack = m_policyStack;
 
     while(!policyStack.empty())  {
         stackOp = policyStack.top();
@@ -173,6 +174,7 @@ bool PolicyStack::processStack(RelationSet &relationSet)  { //XXX add better err
 void PolicyStack::store()  {
     stackSize = 0;
     StackOperation stackOp;
+	stack<StackOperation> policyStack = m_policyStack;
 
     while(!policyStack.empty())  {
         stackOp = policyStack.top();

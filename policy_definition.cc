@@ -33,6 +33,31 @@ PolicyDefinition::PolicyDefinition(string definitionString)  {
     bitsForVariablePosition = ceil(log2(variables.size()));
 }
 
+void _FreeVariableVector(vector<Variable> & v){
+	for (vector<Variable>::iterator v_it = v.begin(); v_it != v.end(); ++v_it){
+		if (v_it->type == VariableSetType::STRING && (v_it->value).asString != NULL)
+			delete (v_it->value).asString;
+		else if (v_it->isFunction()){
+			_FreeVariableVector(*(v_it->funcParams));
+			delete (v_it->funcParams);
+		}
+	}
+}
+
+template<typename T>
+void _FreeVariableMap(map<T, vector<Variable>> & m){
+	for (typename map<T, vector<Variable>>::iterator m_it = m.begin(); m_it != m.end(); ++m_it){
+		_FreeVariableVector(m_it->second);
+	}
+}
+
+
+PolicyDefinition::~PolicyDefinition(){
+	_FreeVariableMap<uint64_t>(enumValues);
+	_FreeVariableMap<FunctionEnumPair>(functionEnumValues);
+	_FreeVariableMap<uint64_t>(functionParameters);
+}
+
 //parses the variables object of the policy definition json
 //by recursion s.t. nested variable containers are supported
 void PolicyDefinition::parseJsonVariableList(Json::Value element)  {

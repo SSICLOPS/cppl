@@ -93,7 +93,7 @@ Variable RelationSet::toVariableByType(AstConstant &constant, VariableSetType ty
     }
     else if(constant.type == AstValueType::String && type == VariableSetType::STRING)  {
         var.type = VariableSetType::STRING;
-        var.value.asString = &(boost::get<string>(constant.value));
+        var.value.asString = new string(boost::get<string>(constant.value));
     }
     else if(constant.type == AstValueType::EnumValue && type == VariableSetType::ENUM_VALUE)  {
         var.type = VariableSetType::ENUM_VALUE;

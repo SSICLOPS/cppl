@@ -21,6 +21,7 @@
 #include "performance.h"
 
 #include "simple_reason_printer.hh"
+#include "false_reason_printer.hh"
 
 namespace  { 
     const size_t SUCCESS = 0; 
@@ -241,19 +242,47 @@ int main (int argc, char *argv[])  {
 
         cout << "Policy result: " << (policyResult ? "true" : "false") << endl;
 
+#ifndef PRINT_REASON_TO_CONSOLE
 		if (printReasonEnabled){
-			SimpleReasonPrinter simpleReasonPrinter;
-			simpleReasonPrinter.init(&evalPolicyDefinition, &evalRelationSet, &evalVariableSet);
-			evalPolicyStack.printReason(simpleReasonPrinter);
+#endif
+			if (policyResult == true){
+				SimpleReasonPrinter simpleReasonPrinter;
+				simpleReasonPrinter.init(&evalPolicyDefinition, &evalRelationSet, &evalVariableSet);
+				evalPolicyStack.printReason(simpleReasonPrinter);
+//#ifdef CONVERT_TO_DNF
+				//cout<<"------------------------------"<<endl;
+				//simpleReasonPrinter.printDNF();
+//#endif
+
 #ifdef PRINT_REASON_TO_CONSOLE
-			cout<<"------------------------------"<<endl;
-			cout << simpleReasonPrinter.printReasonToJSON()<<endl;
-			cout <<"------------------------------"<<endl;
+				cout<<"------------------------------"<<endl;
+				cout << simpleReasonPrinter.printReasonToJSON()<<endl;
+				cout <<"------------------------------"<<endl;
+				if (printReasonEnabled){
 #endif //PRINT_REASON_TO_CONSOLE
-			simpleReasonPrinter.printReasonToJSON(reasonFile);
+				simpleReasonPrinter.printReasonToJSON(reasonFile);
+#ifdef PRINT_REASON_TO_CONSOLE
+				}
+#endif
+			}
+			else {
+				FalseReasonPrinter falseReasonPrinter;
+				falseReasonPrinter.init(&evalPolicyDefinition, &evalPolicyStack, &evalRelationSet, &evalVariableSet);
+				evalPolicyStack.printReason(falseReasonPrinter);
+#ifdef CONVERT_TO_DNF
+				cout<<"------------------------------"<<endl;
+				falseReasonPrinter.printDNF();
+#endif
+				cout<<"------------------------------"<<endl;
+				cout<<"The following formula cannot be satisfied:"<<endl;
+				cout<<falseReasonPrinter.printReasonToString();
+				cout<<"------------------------------"<<endl;
+			}
 		}
 
+#ifndef PRINT_REASON_TO_CONSOLE
     } 
+#endif
     catch(char const *msg)  {
         std::cerr << "Policy Error: " << msg << std::endl;
         return POLICY_ERROR;

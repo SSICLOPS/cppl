@@ -61,7 +61,7 @@ struct Variable  {
     vector<Variable> *funcParams; //only used when the variable set element is a function
     uint8_t bitsForEnumValuePosition; //only used if a enum value
 
-	Variable():idInPolicyDef((uint32_t) -1), funcParams(NULL){}
+	Variable():idInPolicyDef((uint32_t) -1), funcParams(NULL){value.asInt64 = 0;}
 	//Variable(const Variable & other){operator=(other);}
 	//~Variable(){if (type == VariableSetType::STRING) delete value.asString;else if (isFunction()) delete funcParams;}
 
@@ -252,6 +252,9 @@ class VariableSet {
         //contains the variables of the set
         vector<Variable> variables;
 
+		//delete all variables
+		void clear();
+
         //print the calculated relation set size
         void printSize();
 
@@ -276,4 +279,6 @@ class VariableSet {
 
         //used for the variable set calculation
         uint64_t variableSetSize = 0;
+
+		void _deleteVariableList(vector<Variable> & v);
 };

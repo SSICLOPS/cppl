@@ -7,6 +7,16 @@ void PolicyStackProcessor::addStackOperation( PolicyStackProcessorNodeType type,
 	int64_t latestResult;
 	int64_t secondLatestResult;
 
+//#ifdef CONVERT_TO_DNF	
+	//DNFConverterNode latestSet;
+	//DNFConverterNode secondLatestSet; 
+	//DNFConverterNode converterNode;
+	//DNFConverterNode newSet;
+	//set<uint64_t> relationSet;
+	//set<uint64_t> Set;
+	//uint64_t i,j;
+//#endif
+
 	switch(type){
 		case PolicyStackProcessorNodeType::AND:
 			latestResult = workStack.top();
@@ -31,6 +41,19 @@ void PolicyStackProcessor::addStackOperation( PolicyStackProcessorNodeType type,
 						pspn.reason[1] = latestResult;
 				}
 			}
+//#ifdef CONVERT_TO_DNF
+			//latestSet = dnfConvertorStack.top();
+			//dnfConvertorStack.pop();
+			//secondLatestSet = dnfConvertorStack.top();
+			//dnfConvertorStack.pop();
+			//for (i = 0; i < latestSet.size(); ++i)
+				//for (j = 0; j < secondLatestSet.size(); ++j){
+					//Set = latestSet[i];
+					//Set.insert(std::begin(secondLatestSet[j]), std::end(secondLatestSet[j]));
+					//newSet.push_back(Set);
+				//}
+			//dnfConvertorStack.push(newSet);
+//#endif
 
 			break;
 		case PolicyStackProcessorNodeType::OR:
@@ -53,14 +76,27 @@ void PolicyStackProcessor::addStackOperation( PolicyStackProcessorNodeType type,
 				}
 			}
 			else{
-				pspn.reason[0] = secondLatestResult;
-				pspn.reason[1] = latestResult;
+				pspn.reason[1] = secondLatestResult;
+				pspn.reason[0] = latestResult;
 			}
+//#ifdef CONVERT_TO_DNF
+			//latestSet = dnfConvertorStack.top();
+			//dnfConvertorStack.pop();
+			//secondLatestSet = dnfConvertorStack.top();
+			//dnfConvertorStack.pop();
+			//latestSet.insert(std::end(latestSet), std::begin(secondLatestSet), std::end(secondLatestSet));
+			//dnfConvertorStack.push(latestSet);
+//#endif
 			break;
 		case PolicyStackProcessorNodeType::RELATION:
 			pspn.type = PolicyStackProcessorNodeType::RELATION;
 			pspn.result = value;
 			pspn.reason[0] = relatedId;
+//#ifdef CONVERT_TO_DNF
+			//relationSet.insert(relatedId);
+			//converterNode.push_back(relationSet);
+			//dnfConvertorStack.push(converterNode);
+//#endif
 			break;
 	};
 	nodeList.push_back(pspn);

@@ -97,6 +97,8 @@ class PolicyStack  {
 		//print the reason of processing result
 		void printReason(ReasonPrinter & reasonPrinter){policyStackProcessor.printReason(reasonPrinter);}
 
+		std::stack<StackOperation> & getStack(){return m_policyStack;}
+
     private:
         Binary &policyBinary;
         RelationSet &relationSet;
@@ -108,7 +110,7 @@ class PolicyStack  {
         static const uint8_t bitsForStackOperation = 2;
 
         //used for the policy evaluation
-        std::stack<StackOperation> policyStack;
+        std::stack<StackOperation> m_policyStack;
         
         //used for the policy stack size calculation
         uint64_t stackSize = 0;

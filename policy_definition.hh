@@ -24,6 +24,8 @@ class PolicyDefinition  {
     public:
         //populates the varaibles with default values
         PolicyDefinition(string definitionString);
+
+		~PolicyDefinition();
       
         //used for generation
         //get the ID type as defined in the policy definition
@@ -81,6 +83,7 @@ class PolicyDefinition  {
         map<string, uint32_t> variablePositions;
         map<uint32_t, string> variableNames;
         uint32_t variableCounter;
+
         map<uint64_t, vector<Variable>> enumValues;
         map<FunctionEnumPair, vector<Variable>> functionEnumValues;
         map<uint64_t, vector<Variable>> functionParameters;

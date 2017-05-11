@@ -3,6 +3,13 @@
 #include<cstdint>
 #include<stack>
 #include<vector>
+#include<set>
+
+#include "options.hh"
+
+//#ifdef CONVERT_TO_DNF
+//typedef std::vector<std::set<uint64_t>> DNFConverterNode;
+//#endif
 
 #include "reason_printer.hh"
 
@@ -22,6 +29,7 @@ struct PolicyStackProcessorNode {
 	int64_t reason[2];
 };
 
+
 class PolicyStackProcessor {
 	public:
 		PolicyStackProcessor(){PolicyStackProcessorNode pspn;nodeList.push_back(pspn);}
@@ -30,8 +38,15 @@ class PolicyStackProcessor {
 		bool getResult(){return nodeList[nodeList.size() - 1].result;}
 		vector<PolicyStackProcessorNode> getReason();
 		void printReason(ReasonPrinter & printer);
+
+//#ifdef CONVERT_TO_DNF
+		//DNFConverterNode & getDNF(){return dnfConvertorStack.top();}
+//#endif
 	private:
 		vector<PolicyStackProcessorNode> nodeList;	
 		stack<uint64_t> workStack;
+//#ifdef CONVERT_TO_DNF
+		//stack<DNFConverterNode> dnfConvertorStack;
+//#endif
 };
 

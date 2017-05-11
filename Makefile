@@ -1,6 +1,6 @@
 CC := g++
 CPPFLAGS := -std=c++11 -O3 
-CPPFLAGS += -gdwarf-4 -fvar-tracking-assignments
+#CPPFLAGS += -gdwarf-4 -fvar-tracking-assignments
 COMMON_OBJS := policy_definition.o\
 			   policy_header.o\
 			   policy_stack.o\
@@ -18,7 +18,7 @@ COMPRESS_OBJS := ast_print_visitor.o\
 				 ast_preprocessor_visitor.o\
 				 ast_policy_compressor_visitor.o
 
-EVAL_OBJS := simple_reason_printer.o
+EVAL_OBJS := simple_reason_printer.o false_reason_printer.o dnf_convertor.o
 
 OBJECTS := $(COMMON_OBJS) $(COMPRESS_OBJS) $(EVAL_OBJS)
 

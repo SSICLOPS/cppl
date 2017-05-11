@@ -4,7 +4,11 @@
 
 #include<iostream>
 
+//#ifdef CONVERT_TO_DNF
+//void SimpleReasonPrinter::print(bool result, vector<PolicyStackProcessorNode> reason, DNFConverterNode & dnf){
+//#else
 void SimpleReasonPrinter::print(bool result, vector<PolicyStackProcessorNode> reason){
+//#endif
 	if (result){
 		queue<PolicyStackProcessorNode> workQueue;
 		workQueue.push(reason[1]);
@@ -17,7 +21,7 @@ void SimpleReasonPrinter::print(bool result, vector<PolicyStackProcessorNode> re
 					workQueue.push(reason[pspn.reason[1]]);
 					break;
 				case PolicyStackProcessorNodeType::OR:
-					workQueue.push(reason[pspn.reason[0]]);
+					workQueue.push(choose(reason, pspn));
 					break;
 				case PolicyStackProcessorNodeType::RELATION:
 					reasonList.push_back(pspn.reason[0]);
@@ -26,7 +30,39 @@ void SimpleReasonPrinter::print(bool result, vector<PolicyStackProcessorNode> re
 			workQueue.pop();
 		}
 	}
+
+//#ifdef CONVERT_TO_DNF
+	//mDNF = dnf;
+//#endif
 }
+
+//#ifdef CONVERT_TO_DNF
+//void SimpleReasonPrinter::printDNF(){
+	//unsigned long i = 0;
+	//if (mDNF.size() == 0)
+		//return;
+
+	//while(true){
+		//std::cout<<"( ";
+		//set<uint64_t>::iterator it = mDNF[i].begin();
+		//while(true){
+			//std::cout<< _relationToString(*it);
+			//++it;
+			//if (it != mDNF[i].end())
+				//std::cout<<" && ";
+			//else
+				//break;
+		//}
+		//std::cout<<" )";
+		//++i;
+		//if (i != mDNF.size())
+			//std::cout<<" || ";
+		//else
+			//break;
+	//}
+	//std::cout<<std::endl;
+//}
+//#endif
 
 string SimpleReasonPrinter::printReasonToString(){
 	string str = "";
@@ -49,27 +85,33 @@ string SimpleReasonPrinter::printReasonToString(){
 	return str;
 }
 
-string SimpleReasonPrinter::_printReasonToJSON_AUX(uint64_t reasonId){
+string SimpleReasonPrinter::_relationToString(uint64_t relationId, string str_surrounding){
 	string str = "";
-	str +=  "\"";
-	vector<int64_t> variableIds = mRelationSet->getRelationVariableIds(reasonList[reasonId]);
+	vector<int64_t> variableIds = mRelationSet->getRelationVariableIds(relationId);
 	Variable vLHS = mVariableSet->getVariableById(variableIds[0]);
-	RelationSetType type = mRelationSet->getRelationType(reasonList[reasonId]);
+	RelationSetType type = mRelationSet->getRelationType(relationId);
 	if (vLHS.isFunction()){
 		if (type == RelationSetType::IS_TRUE){
-			str += _variableToString(vLHS, "\\\"");
+			str += _variableToString(vLHS, str_surrounding);
 		}
 		else if (type == RelationSetType::IS_FALSE){
-			str += "!" + _variableToString(vLHS, "\\\"");
+			str += "!" + _variableToString(vLHS, str_surrounding);
 		}
 	}
 	else{
-		str += _variableToString(vLHS, "\\\"") + _relationTypeToString(type);
+		str += _variableToString(vLHS, str_surrounding) + _relationTypeToString(type);
 		if (variableIds[1] >= 0){
 			Variable vRHS = mVariableSet->getVariableById(variableIds[1]);
-			str +=  _variableToString(vRHS, "\\\"");
+			str +=  _variableToString(vRHS, str_surrounding);
 		}
 	}
+	return str;
+}
+
+string SimpleReasonPrinter::_printReasonToJSON_AUX(uint64_t reasonId){
+	string str = "";
+	str +=  "\"";
+	str += _relationToString(reasonList[reasonId], "\\\"");
 	str += "\"";
 
 	return str;

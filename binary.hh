@@ -19,6 +19,8 @@ class Binary {
             nextFreeBit = 0;
         }
 
+		~Binary(){free(mem);}
+
         //adds the bits to the binary
         void push_back(uint64_t bits, uint8_t numberOfBits = 64);
 

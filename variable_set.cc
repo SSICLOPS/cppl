@@ -1,5 +1,20 @@
 #include "variable_set.hh"
 
+void VariableSet::clear(){
+	_deleteVariableList(variables);
+}
+
+void VariableSet::_deleteVariableList(vector<Variable> & v){
+	for (vector<Variable>::iterator it = v.begin(); it != v.end(); ++it){
+		if (it->type == VariableSetType::STRING && it->value.asString != NULL)
+			delete it->value.asString;
+		else if (it->isFunction()){
+			_deleteVariableList(*(it->funcParams));
+			delete it->funcParams;
+		}
+	}
+}
+
 ostream& operator<<(ostream &out, VariableSet &variableSet) {
     #if DEBUG_POLICY_GENERATION
         out << variableSet.asString;
