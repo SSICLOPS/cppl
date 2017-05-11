@@ -32,7 +32,7 @@ If your system provides the jsoncpp library in version smaller 0.7.0 the compili
 
 ## Usage Examples
 
-For additional options, e.g., output of reasons for the result, have a look at the options of the binaries (````--help```).
+For additional options, e.g., output of reasons for the result, have a look at the options of the binaries (```--help```).
 
 ### Newer libcppl version
 
