@@ -1,0 +1,53 @@
+{
+    "version": 23,
+    "variables": [
+        {
+            "name": "storage",
+            "variables":  [
+                {
+                    "name": "provider",
+                    "type": "string"
+                },
+                {
+                    "name": "log_access",
+                    "type": "boolean"
+                },
+                {
+                    "name": "canDelete",
+                    "type": "boolean"
+                },
+                {
+                    "name": "deleteAfter",
+                    "type": "function",
+                    "parameters": [
+                        "int32"
+                    ]
+                },
+                {
+                    "name": "canBackupHistory",
+                    "type": "boolean"
+                },
+                {
+                    "name": "backupHistory",
+                    "type": "function",
+                    "parameters": [
+                        "string"
+                    ]
+                },
+                {
+                    "name": "location",
+                    "type": "string",
+                    "values": ["DE", "FR", "US", "GB", "NL", "EU"]
+                },
+                {
+                    "name": "encryption",
+                    "type": "boolean"
+                },
+                {
+                    "name": "replication",
+                    "type": "int32"
+                }
+            ]
+        }
+    ]
+}

@@ -55,6 +55,10 @@ performance.o: performance.c performance.h
 %.o: %.cc %.hh options.hh debug.hh
 	$(CC) -c $(CPPFLAGS) $<
 
+test:
+	make -C examples/test_cases/
+	make -C examples/test_cases/ clean
+
 clean:
 	$(RM) cppl_generator cppl_compress cppl_evaluate
 	$(RM) equation_parser.tab.hh equation_parser.tab.cc
