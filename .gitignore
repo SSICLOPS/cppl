@@ -12,3 +12,9 @@ location.hh
 stack.hh
 eval/figures
 eval/results/*
+test.sh
+
+policy-decision-point/policy_decision_point
+policy-decision-point/client
+policy-decision-point/server
+policy-decision-point/func_handler_23.so

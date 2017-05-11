@@ -20,6 +20,10 @@ See `debug.hh` and `options.hh`, e.g., ```#define DEBUG_POLICY_GENERATION 1``` e
 make
 ```
 
+#### Troubeshooting
+
+If your system provides the jsoncpp library in version smaller 0.7.0 the compiling process will encounter errors such as ```undefined reference to `Json::Value::isInt64() const'```. In such a case, please set `USE_SYSTEM_JSONCPP` in Makefile and policy-decision-point/Makefile to 0 to use the jsoncpp version included in this repository.
+
 ## Usage Examples
 
 ```bash

@@ -1,3 +1,5 @@
+USE_SYSTEM_JSONCPP = 1
+
 CC := g++
 CPPFLAGS := -std=c++11 -O3 
 #CPPFLAGS += -gdwarf-4 -fvar-tracking-assignments
@@ -8,11 +10,16 @@ COMMON_OBJS := policy_definition.o\
 			   variable_set.o\
 			   function_handler.o\
 			   binary.o\
-			   jsoncpp.o\
-			   binary.o\
 			   performance.o\
 			   debug.o\
 			   policy_stack_processor.o
+
+ifeq ($(USE_SYSTEM_JSONCPP), 0)
+COMMON_OBJS += jsoncpp.o
+LIBHSONCPP :=
+else
+LIBJSONCPP := -ljsoncpp
+endif
 
 COMPRESS_OBJS := ast_print_visitor.o\
 				 ast_preprocessor_visitor.o\
@@ -22,13 +29,15 @@ EVAL_OBJS := simple_reason_printer.o false_reason_printer.o dnf_convertor.o
 
 OBJECTS := $(COMMON_OBJS) $(COMPRESS_OBJS) $(EVAL_OBJS)
 
-LIB := -lboost_program_options -ljsoncpp
+LIB := -lboost_program_options $(LIBJSONCPP)
 
 DOT_CC := equation_parser.tab.cc equation_scanner.lex.cc equation_driver.cc
 
 RM := rm -f
 
-all: cppl_generator cppl_compress cppl_evaluate
+MAKE := make
+
+all: cppl_generator cppl_compress cppl_evaluate policy-decision-point
 
 cppl_generator: cppl_generator.cc $(DOT_CC) $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ $^ $(LIB)
@@ -55,6 +64,10 @@ performance.o: performance.c performance.h
 %.o: %.cc %.hh options.hh debug.hh
 	$(CC) -c $(CPPFLAGS) $<
 
+.PHONY: policy-decision-point
+policy-decision-point:
+	$(MAKE) -C policy-decision-point
+
 test:
 	make -C examples/test_cases/
 	make -C examples/test_cases/ clean
@@ -67,3 +80,4 @@ clean:
 	$(RM) *.o
 	#delete output from reason printer
 	$(RM) *.json
+	$(MAKE) clean -C policy-decision-point
