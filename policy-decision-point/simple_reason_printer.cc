@@ -10,7 +10,7 @@
 void SimpleReasonPrinter::print(bool result, vector<PolicyStackEvaluatorNode> reason){
 	if (result){
 		queue<PolicyStackEvaluatorNode> workQueue;
-		workQueue.push(reason[1]);
+		workQueue.push(reason[0]);
 
 		while(!workQueue.empty()){
 			PolicyStackEvaluatorNode pspn = workQueue.front();
