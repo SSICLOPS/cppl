@@ -136,6 +136,8 @@ void Binary::read_from_file(string filename)  {
 		free(mem);
 
 	ifstream file(filename, std::ios_base::binary | std::ios_base::ate);
+	if(!file.is_open())
+		throw runtime_error("Can't open file "+ filename);
 	uint64_t fileSize = file.tellg();
 	uint64_t neededBytes = fileSize;
 	if (neededBytes <= initMallocSize)
