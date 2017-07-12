@@ -39,7 +39,7 @@ bool cppl_compress_policy_to_file(const string & policy,
         bool traceScanningEnabled = false);
 
 /**
- * Compress an uncompressed cppl policy and write the result to a file.
+ * Compress an uncompressed cppl policy.
  */
 Binary * cppl_compress_policy(const string & policy,
         const PolicyDefinition & policyDefinition,
