@@ -26,6 +26,15 @@ make
 make test
 ```
 
+#### Integrating CPPL in your python project
+
+If you want to use CPPL from a python project you may use the available python module, which is built with
+```bash
+make python-module
+```
+This will produce `cppl_cpp_python_bridge.so` and `cppl.py` in `python-module/build/lib.<architecture>`.
+You should only use `cppl.py` in your python project, but still need to make `cppl_cpp_python_bridge.so` and `policy-decision-point/libcppl.so` available for the python interpreter, e.g., by setting `LD_LIBRARY_PATH` accordingly.
+
 #### Troubeshooting
 
 If your system provides the jsoncpp library in version smaller 0.7.0 the compiling process will encounter errors such as ```undefined reference to `Json::Value::isInt64() const'```. In such a case, please set `USE_SYSTEM_JSONCPP` in Makefile and policy-decision-point/Makefile to 0 to use the jsoncpp version included in this repository.

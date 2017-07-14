@@ -68,6 +68,10 @@ performance.o: performance.c performance.h
 policy-decision-point:
 	$(MAKE) -C policy-decision-point
 
+.PHONY: python-module
+python-module:
+	$(MAKE) -C python-module
+
 test:
 	make -C examples/test_cases/
 	make -C examples/test_cases/ clean
@@ -81,3 +85,4 @@ clean:
 	#delete output from reason printer
 	$(RM) *.json
 	$(MAKE) clean -C policy-decision-point
+	$(MAKE) clean -C python-module
