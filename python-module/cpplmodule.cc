@@ -112,18 +112,40 @@ static PyObject *cpplmodule_compress_policy_to_file(PyObject *self, PyObject *ar
 }
 
 /**
- * Compress an uncompressed cppl policy and write.
+ * Compress an uncompressed cppl policy.
  */
-// TODO implement
-// Binary * cppl_compress_policy(const string & policy,
-//         const PolicyDefinition & policyDefinition,
-//         bool traceParsingEnabled = false,
-//         bool traceScanningEnabled = false);
+static PyObject *cpplmodule_compress_policy(PyObject *self, PyObject *args)
+{
+  PyObject *retval;
+  long long pd_key;
+  char *policy, *compressed_policy_mem;
+  int compressed_policy_mem_len;
+  PolicyDefinition *pd;
+  Binary *compressed_policy;
 
-                            // std::map<int, &PolicyDefinition> pd_map;
-                            // pd_map_id = 0;
+  if (!PyArg_ParseTuple(args, "sL", &policy, &pd_key)) {
+    return NULL;
+  }
 
-                            // cpplmodule_helper_pd_map_add(PolicyDefinition & )
+  bool traceParsingEnabled = false;
+  bool traceScanningEnabled = false;
+
+  pd = pd_list.at(pd_key);
+
+  try {
+    compressed_policy = cppl_compress_policy(policy, *pd, traceParsingEnabled, traceScanningEnabled);
+  }
+  catch (std::runtime_error e) {
+    return PyErr_Format(CpplError, "%s", e.what());
+  }
+
+  compressed_policy_mem = (char *)compressed_policy->getPointer();
+  compressed_policy_mem_len = ceil((double)compressed_policy->size() / 8);
+
+  retval = Py_BuildValue("s#", compressed_policy_mem, compressed_policy_mem_len);
+  delete compressed_policy;
+  return retval;
+}
 
 /**
  * Read policy definition and corresponding function handler library from disk.
@@ -155,9 +177,34 @@ static PyObject *cpplmodule_read_policy_definition_from_file(PyObject *self, PyO
 /**
  * Get policy definition and corresponding function handler from memory.
  */
-// TODO implement
-// PolicyDefinition * cppl_read_policy_definition(const string & policyDefinition,
-//         const Binary * functionHandler = NULL);
+static PyObject *cpplmodule_read_policy_definition(PyObject *self, PyObject *args)
+{
+  PyObject *retval;
+  char *policyDefinitionString, *functionHandlerLibBuf;
+  int functionHandlerLibBuf_len;
+  PolicyDefinition *pd;
+  Binary functionHandlerLib;
+
+  if (!PyArg_ParseTuple(args, "ss#", &policyDefinitionString, &functionHandlerLibBuf, &functionHandlerLibBuf_len)) {
+    return NULL;
+  }
+
+  functionHandlerLib.read_from_mem(functionHandlerLibBuf, functionHandlerLibBuf_len * 8);
+
+  try {
+    pd = cppl_read_policy_definition(policyDefinitionString, &functionHandlerLib);
+  }
+  catch (std::string s) {
+    return PyErr_Format(CpplError, "%s", s.c_str());
+  }
+
+  long long pd_key = (long long)pd;
+  pd_list[pd_key] = pd;
+
+  retval = Py_BuildValue("L", pd_key);
+  return retval;
+}
+
 
 /**
  * Get node parameters from disk.
@@ -194,10 +241,34 @@ static PyObject *cpplmodule_read_node_parameters_from_file(PyObject *self, PyObj
 /**
  * Get node parameters from memory.
  */
-// TODO implement
-// NodeParameters * cppl_read_node_parameters(const string & nodeParams,
-//         const string & nodeRuntimeParams,
-//         const PolicyDefinition * policyDefinition);
+static PyObject *cpplmodule_read_node_parameters(PyObject *self, PyObject *args)
+{
+  PyObject *retval;
+  char *nodeParamsString, *nodeRuntimeParamsString;
+  long long pd_key;
+
+  PolicyDefinition *pd;
+  NodeParameters *np;
+
+  if (!PyArg_ParseTuple(args, "ssL", &nodeParamsString, &nodeRuntimeParamsString, &pd_key)) {
+    return NULL;
+  }
+
+  pd = pd_list.at(pd_key);
+
+  try {
+    np = cppl_read_node_parameters(nodeParamsString, nodeRuntimeParamsString, pd);
+  }
+  catch (std::string s) {
+    return PyErr_Format(CpplError, "%s", s.c_str());
+  }
+
+  long long np_key = (long long)np;
+  np_list[np_key] = np;
+
+  retval = Py_BuildValue("L", np_key);
+  return retval;
+}
 
 /**
  * Get compressed cppl policy from file.
@@ -236,9 +307,41 @@ static PyObject *cpplmodule_read_compressed_cppl_from_file(PyObject *self, PyObj
 /**
  * Get compressed cppl policy from memory.
  */
-// TODO implement
-// PolicyStack * cppl_read_compressed_cppl(Binary & binary,
-//         const PolicyDefinition * policyDefinition);
+static PyObject *cpplmodule_read_compressed_cppl(PyObject *self, PyObject *args)
+{
+  PyObject *retval;
+  char *ccpplDataBuf;
+  int ccpplDataBuf_len;
+  long long pd_key;
+  PolicyDefinition *pd;
+  PolicyStack *compressed_policy;
+  Binary ccpplData;
+
+  if (!PyArg_ParseTuple(args, "s#L", &ccpplDataBuf, &ccpplDataBuf_len, &pd_key)) {
+    return NULL;
+  }
+
+  ccpplData.read_from_mem(ccpplDataBuf, ccpplDataBuf_len * 8);
+
+  pd = pd_list.at(pd_key);
+
+  try {
+    compressed_policy = cppl_read_compressed_cppl(ccpplData, pd);
+  }
+  catch (std::runtime_error e) {
+    return PyErr_Format(CpplError, "%s", e.what());
+  }
+  catch (std::string s) {
+    return PyErr_Format(CpplError, "%s", s.c_str());
+  }
+
+  long long ps_key = (long long)compressed_policy;
+  ps_list[ps_key] = compressed_policy;
+
+  retval = Py_BuildValue("L", ps_key);
+  return retval;
+}
+
 
 /**
  * @return True of the nodeParameters fulfill the policy, False otherwise.
@@ -371,13 +474,12 @@ static PyMethodDef cpplMethods[] = {
         METH_NOARGS,
         "Uninitialize the CPPL library."
     },
-    // TODO implement
-    // {
-    //     "cppl_compress_policy",
-    //     cpplmodule_compress_policy,
-    //     METH_VARARGS,
-    //     "Compress policy."
-    // }
+    {
+        "compress_policy",
+        cpplmodule_compress_policy,
+        METH_VARARGS,
+        "Compress policy."
+    },
     {
         "compress_policy_to_file",
         cpplmodule_compress_policy_to_file,
@@ -396,40 +498,36 @@ static PyMethodDef cpplMethods[] = {
         METH_VARARGS,
         "Read the content of a cppl definition file."
     },
-    // TODO implement
-    // {
-    //     "read_policy_definition",
-    //     cpplmodule_read_policy_definition,
-    //     METH_VARARGS,
-    //     "TODO"
-    // },
-    // TODO implement
+    {
+        "read_policy_definition",
+        cpplmodule_read_policy_definition,
+        METH_VARARGS,
+        "Read the content of a policy definition and the corresponding function handler file"
+    },
     {
         "read_node_parameters_from_file",
         cpplmodule_read_node_parameters_from_file,
         METH_VARARGS,
         "Read node parameters and node runtime parameters from disk"
     },
-    // TODO implement
-    // {
-    //     "read_node_parameters",
-    //     cpplmodule_read_node_parameters,
-    //     METH_VARARGS,
-    //     "TODO"
-    // },
+    {
+        "read_node_parameters",
+        cpplmodule_read_node_parameters,
+        METH_VARARGS,
+        "Read node parameters and node runtime parameters from memory"
+    },
     {
         "read_compressed_cppl_from_file",
         cpplmodule_read_compressed_cppl_from_file,
         METH_VARARGS,
-        "TODO"
+        "Read compressed policy from file"
     },
-    // TODO implement
-    // {
-    //     "read_compressed_cppl",
-    //     cpplmodule_read_compressed_cppl,
-    //     METH_VARARGS,
-    //     "TODO"
-    // },
+    {
+        "read_compressed_cppl",
+        cpplmodule_read_compressed_cppl,
+        METH_VARARGS,
+        "Read compressed policy from memory"
+    },
     {
         "evaluate",
         cpplmodule_evaluate,

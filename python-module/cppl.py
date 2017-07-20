@@ -10,9 +10,12 @@ def cleanup():
 
 class PolicyDefinition(object):
     """docstring for PolicyDefinition"""
-    def __init__(self, policyDefinitionPath, functionHandlerPath):
+    def __init__(self, policyDefinitionPath, functionHandlerPath, inmemory=False):
         super(PolicyDefinition, self).__init__()
-        self.pd_id = cppl_bridge.read_policy_definition_from_file( policyDefinitionPath, functionHandlerPath)
+        if inmemory:
+            self.pd_id = cppl_bridge.read_policy_definition( policyDefinitionPath, functionHandlerPath)
+        else:
+            self.pd_id = cppl_bridge.read_policy_definition_from_file( policyDefinitionPath, functionHandlerPath)
 
     def get_id(self):
         return self.pd_id
@@ -22,13 +25,16 @@ class PolicyDefinition(object):
 
 class NodeParameters(object):
     """docstring for NodeParameters"""
-    def __init__(self, nodeParametersPath, nodeRuntimeParametersPath, policyDefinition):
+    def __init__(self, nodeParametersPath, nodeRuntimeParametersPath, policyDefinition, inmemory=False):
         # sanity checks
         if type(policyDefinition) != PolicyDefinition:
             raise TypeError
 
         super(NodeParameters, self).__init__()
-        self.np_id = cppl_bridge.read_node_parameters_from_file( nodeParametersPath, nodeRuntimeParametersPath, policyDefinition.get_id() )
+        if inmemory:
+            self.np_id = cppl_bridge.read_node_parameters( nodeParametersPath, nodeRuntimeParametersPath, policyDefinition.get_id() )
+        else:
+            self.np_id = cppl_bridge.read_node_parameters_from_file( nodeParametersPath, nodeRuntimeParametersPath, policyDefinition.get_id() )
 
     def get_id(self):
         return self.np_id
@@ -45,6 +51,14 @@ class Policy(object):
     def get_string(self):
         return self.string
 
+    def compress(self, policyDefinition):
+        # sanity checks
+        if type(policyDefinition) != PolicyDefinition:
+            raise TypeError
+
+        ret = cppl_bridge.compress_policy(self.get_string(), policyDefinition.get_id())
+        return ret
+
     def compress_to_file(self, destPath, policyDefinition):
         # sanity checks
         if type(policyDefinition) != PolicyDefinition:
@@ -58,13 +72,16 @@ class Policy(object):
 
 class CompressedPolicy(object):
     """docstring for CompressedPolicy"""
-    def __init__(self, compressedPolicyPath, policyDefinition):
+    def __init__(self, compressedPolicyPath, policyDefinition, inmemory=False):
         # sanity checks
         if type(policyDefinition) != PolicyDefinition:
             raise TypeError
 
         super(CompressedPolicy, self).__init__()
-        self.ccppl_id = cppl_bridge.read_compressed_cppl_from_file( compressedPolicyPath, policyDefinition.get_id() )
+        if inmemory:
+            self.ccppl_id = cppl_bridge.read_compressed_cppl( compressedPolicyPath, policyDefinition.get_id() )
+        else:
+            self.ccppl_id = cppl_bridge.read_compressed_cppl_from_file( compressedPolicyPath, policyDefinition.get_id() )
         self.policyDefinition = policyDefinition
 
     def get_id(self):

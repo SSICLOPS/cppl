@@ -52,6 +52,15 @@ LD_LIBRARY_PATH=./policy-decision-point ./policy-decision-point/cppl_compress --
 LD_LIBRARY_PATH=./policy-decision-point ./policy-decision-point/cppl_evaluate --ccppl-file examples/example_paper/policy_compressed.ccppl --policy-definition-file examples/example_paper/policy_definition.json --function-handler policy-decision-point/func_handler_23.so --variables-file examples/example_paper/policy_nodeparams_1.json --runtime-variables-file examples/example_paper/policy_noderuntimeparams_1.json
 ```
 
+#### Testing the python module
+
+NOTE: You may need to adapt ```lib.linux-x86_64-2.7``` in the following commands according to your architecture.
+
+```bash
+LD_LIBRARY_PATH=policy-decision-point/ PYTHONPATH=python-module/build/lib.linux-x86_64-2.7/ python python-module/examples/example.py
+LD_LIBRARY_PATH=policy-decision-point/ PYTHONPATH=python-module/build/lib.linux-x86_64-2.7/ python python-module/examples/example_memory.py
+```
+
 ### Original paper version
 
 ```bash
