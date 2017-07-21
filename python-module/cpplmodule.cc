@@ -139,6 +139,10 @@ static PyObject *cpplmodule_compress_policy(PyObject *self, PyObject *args)
     return PyErr_Format(CpplError, "%s", e.what());
   }
 
+  if(!compressed_policy) {
+    return PyErr_Format(CpplError, "Compression failed");
+  }
+
   compressed_policy_mem = (char *)compressed_policy->getPointer();
   compressed_policy_mem_len = ceil((double)compressed_policy->size() / 8);
 
