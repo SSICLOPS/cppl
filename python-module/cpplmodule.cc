@@ -359,7 +359,7 @@ static PyObject *cpplmodule_evaluate(PyObject *self, PyObject *args)
   PolicyStack *compressed_policy;
   NodeParameters *np;
 
-  if (!PyArg_ParseTuple(args, "iL", &ps_key, &np_key)) {
+  if (!PyArg_ParseTuple(args, "LL", &ps_key, &np_key)) {
     return NULL;
   }
 
