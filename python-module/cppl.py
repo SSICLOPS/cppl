@@ -44,9 +44,12 @@ class NodeParameters(object):
 
 class Policy(object):
     """docstring for Policy"""
-    def __init__(self, policyPath):
+    def __init__(self, policyPath=None, policyStr = None):
         super(Policy, self).__init__()
-        self.string = cppl_bridge.read_policy_from_file( policyPath )
+        if policyStr is not None:
+            self.string = policyStr
+        elif policyPath is not None:
+            self.string = cppl_bridge.read_policy_from_file( policyPath )
 
     def get_string(self):
         return self.string
