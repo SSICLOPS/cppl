@@ -44,7 +44,7 @@ class NodeParameters(object):
 
 class Policy(object):
     """docstring for Policy"""
-    def __init__(self, policyPath=None, inmemory=False):
+    def __init__(self, policyPath, inmemory=False):
         super(Policy, self).__init__()
         if inmemory:
             self.string = policyPath
