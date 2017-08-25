@@ -90,10 +90,13 @@ void CcpplCompressor::storeVariable(Binary & binary, const Variable & var, bool 
 		binary.push_back((((Boolean &)var).isTrue())?1:0, 1);
 	}
 	else if (var.get_type() == Variable::Types::STRING){
-		const char * cstr = ((String &)var).get_value().c_str();
-		for (size_t i = 0; i < ((String &)var).get_value().size(); ++i){
+		std::string str = ((String &)var).get_value();
+		const char *cstr = str.c_str();
+		size_t cstr_len = str.size();
+		for (size_t i = 0; i < cstr_len; ++i){
 			binary.push_back(cstr[i], 8);
 		}
+		// Push Null-terminator
 		binary.push_back(0, 8);
 	}
 	else if (var.get_type() == Variable::Types::ID){
