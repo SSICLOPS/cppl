@@ -48,7 +48,7 @@ class Policy(object):
         super(Policy, self).__init__()
         if inmemory:
             self.string = policyPath
-        else
+        else:
             self.string = cppl_bridge.read_policy_from_file( policyPath )
 
     def get_string(self):
