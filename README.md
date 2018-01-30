@@ -2,7 +2,7 @@
 
 ## Versions
 
-This repository contains two versions of CPPL. The first is the version used for the paper with some extensions. The second version is the library form libcppl which is built in `policy-decision-point`. You should use the latter if not explicitly pointed to otherwise.
+This repository contains two versions of CPPL. The first is the version used for the original paper at ACM WPES 2016 with some extensions. The second version is the library form libcppl which is built in `policy-decision-point` and provided the basis for several integration concepts presented in the paper at IEEE IC2E 2018. We suggest the use of the latter if not explicitly pointed to otherwise.
 
 ## Build Instructions
 
@@ -85,8 +85,8 @@ Furthermore, the server needs to know which parts of the policy it has to apply,
 
 ### Policy Decision Point
 
-This repository contains a small implementation for a policy decision point (PDP) and minimal client and server functionality.
-Note that the PDP yet does not do anything with the results, i.e., a real PDP would select an appropriate server and forward the request.
+This repository contains a small example implementation for a policy decision point (PDP) and minimal examples for client and server functionality.
+Note that this example PDP does not proceed beyond cppl results, i.e., a fully implemented PDP additionally needs to select an appropriate server (depending on cloud operator specific key performance indicators) and forward the request.
 Similarly, the server would need to check evaluation results (reasons given as json string) and handle data according to these policy evaluation results, e.g., set up triggers for deletion at a specific point in time. As this is use case specific, it must be implemented by the systems integrating CPPL.
 
 ```
@@ -107,5 +107,27 @@ The compressed policy is a binary file. To compare it with the readable debuggin
 
 ```bash
 xxd -b examples/example_paper/policy_compressed.ccppl
+```
+
+# Research papers
+
+The following research papers present CPPL and it's underlying concepts:
+
+```
+Martin Henze, Jens Hiller, Sascha Schmerling, Jan Henrik Ziegeldorf and Klaus Wehrle
+CPPL: Compact Privacy Policy Language
+Proceedings of the 15th Workshop on Privacy in the Electronic Society (WPES), co-located with the 23rd ACM Conference on Computer and Communications Security (CCS), Vienna, Austria , page 99-110.
+Publisher: ACM,
+October 2016
+DOI: 10.1145/2994620.2994627
+ISBN: 978-1-4503-4569-9
+```
+```
+Jens Hiller, Mael Kimmerlin, Max Plauth, Seppo Heikkila, Stefan Klauck, Ville Lindfors, Felix Eberhardt, Dariusz Bursztynowski, Jesus Llorente Santos, Oliver Hohlfeld and Klaus Wehrle
+Giving Customers Control over Their Data: Integrating a Policy Language into the Cloud
+Proceedings of the 2018 IEEE International Conference on Cloud Engineering (IC2E 2018), Orlando, Florida, USA
+Publisher: IEEE,
+April 2018
+accepted
 ```
 
